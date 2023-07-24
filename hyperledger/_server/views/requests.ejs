@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Requests</title>
+</head>
+<body>
+  <h1>List of Requests</h1>
+  <ul>
+    <% requests.forEach((request) => { %>
+      <li>
+        <h2><%= request.id %></h2>
+        <p><%= request.username %></p>
+        <p><%= request.amount %></p>
+        <p><%= request.remark %></p>
+        <!-- Add more details to display as needed -->
+        <form id="approveForm_<%= request.id %>" method="POST" action="/approve">
+          <input type="hidden" name="requestId" value="<%= request.id %>">
+          <button type="button" onclick="approveRequest(<%= request.id %>)">Approve</button>
+        </form>
+        <form id="disapproveForm_<%= request.id %>" method="POST" action="/disapprove">
+          <input type="hidden" name="requestId" value="<%= request.id %>">
+          <button type="button" onclick="disapproveRequest(<%= request.id %>)">Disapprove</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+
+  <script>
+    function authentuation() {
+      var token = req.params.token
+      console.log("authing here")
+      var token = req.token;
+      jwt.verify(token, app.get('secret'), (err, decoded) => {      
+          if (err) {
+              console.log(`Error ================:${err}`)
+              res.send({
+                  success: false,
+                  message: 'Failed to authenticate token. Make sure to include the ' +
+                      'token returned from /users call in the authorization header ' +
+                      ' as a Bearer token'
+              });
+              return;
+          } else {
+              req.username = decoded.username;
+              req.orgname = decoded.orgName;
+              logger.debug(util.format('Decoded from JWT token: username - %s, orgname - %s', decoded.username, decoded.orgName));
+              return
+          }
+      })
+    }
+
+    function approveRequest(requestId) {
+      // Perform any client-side actions here before submitting the form
+      console.log(`Approving request with ID: ${requestId}`);
+      document.getElementById(`approveForm_${requestId}`).submit();
+    }
+
+    function disapproveRequest(requestId) {
+      // Perform any client-side actions here before submitting the form
+      console.log(`Disapproving request with ID: ${requestId}`);
+      document.getElementById(`disapproveForm_${requestId}`).submit();
+    }
+  </script>
+</body>
+</html>
